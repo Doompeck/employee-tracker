@@ -21,7 +21,6 @@ inquirer
         "View all departments",
         "View all roles",
         "View all employees",
-        "View employees by Department",
         "Add a department",
         "Add a role",
         "Add an employee",
@@ -30,29 +29,36 @@ inquirer
         ],  
     })
     .then(({ choice }) => {
-        if(home === "View all departments"){
+        if(choice === "View all departments"){
             viewDepartments();
-        } else if (home === "View all roles"){
+        } else if (choice === "View all roles"){
             viewRoles();
-        } else if (home === "View all employees"){
+        } else if (choice === "View all employees"){
             viewEmployees();
-        }else if (home === "View employees by Department"){
-            viewEmployeesByDept();
-        } else if (home === "Add a department"){
+        }else if (choice === "Add a department"){
             addDepartment();
-        } else if (home === "Add a role"){
+        } else if (choice === "Add a role"){
             addRole();
-        } else if (home === "Add an employee"){
+        } else if (choice === "Add an employee"){
             addEmployee();
-        } else if (home === "Update an employee"){
+        } else if (choice === "Update an employee"){
             updateEmployee
+        } else if (choice === 'Exit'){
+            endProgram();
         }
     });
 }
 
 // Next functions will be to view ALL departments, roles, and employees.
 function viewDepartments() {
-
+const sql = `SELECT d_id AS id, name FROM department`;
+db.query(sql, (err, rows) => {
+    if(err){
+        console.log(err.message);
+    }
+    console.table(rows);
+    mainMenu();
+})
 }
 
 function viewRoles() {
@@ -62,6 +68,8 @@ function viewRoles() {
 function viewEmployees() {
 
 }
+
+// I will attempt this at some point.
 function viewEmployeesByDept(){
 
 }
@@ -94,7 +102,8 @@ function updateEmployee() {
 
 // End the program
 function endProgram() {
-
+    console.log("Goodbye!");
+process.exit(1);
 }
 
 module.exports = databaseInit;
