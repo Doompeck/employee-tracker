@@ -1,5 +1,6 @@
-const mysql2 = require('mysql2');
-const utils = require('utils');
+const mysql = require('mysql2');
+// const utils = require('utils');
+// const inquirer = require('inquirer');
 
 require('dotenv').config();
 
@@ -12,7 +13,18 @@ const db = mysql.createConnection(
     },
 );
 
-db.query = utils.promisify(db.query);
+// db.query('SELECT * FROM employee', function (err, results) {
+//     if(err) {
+//         console.error(err);
+//     }
+//     console.log(results);
+// });
+
+
+
+
+
+// db.query = utils.promisify(db.query);
 // view all departments
 // SELECT * FROM department
 
