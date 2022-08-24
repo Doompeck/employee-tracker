@@ -1,6 +1,6 @@
-const db = require('./db/connect');
-const inquirer = require('inquirer');
+const db = require('../db/connect');
 const conTable = require('console.table');
+const inquirer = require("inquirer");
 
 // All functionality is built into this file.
 
