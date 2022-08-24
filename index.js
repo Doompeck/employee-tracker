@@ -5,6 +5,6 @@ db.connect(err => {
     if (err) throw err;
     setTimeout(() => {
         console.log("Hey There");
-        // databaseInit();
+        databaseInit();
     }, 1000);
 });

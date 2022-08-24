@@ -6,12 +6,48 @@ const inquirer = require("inquirer");
 
 // function to display a homescreen and the initial prompts.
 function databaseInit() {
-
+console.log("Welcome to the Employee Database.");
+mainMenu();
 }
 
 // function for the prompts from inquirer. All methods will be determined in this function.
 function mainMenu() {
-
+inquirer
+    .prompt({
+        type: "list",
+        name: "choice",
+        message: "Select an option.",
+        choices:[
+        "View all departments",
+        "View all roles",
+        "View all employees",
+        "View employees by Department",
+        "Add a department",
+        "Add a role",
+        "Add an employee",
+        "Update an employee",
+        "Exit",
+        ],  
+    })
+    .then(({ choice }) => {
+        if(home === "View all departments"){
+            viewDepartments();
+        } else if (home === "View all roles"){
+            viewRoles();
+        } else if (home === "View all employees"){
+            viewEmployees();
+        }else if (home === "View employees by Department"){
+            viewEmployeesByDept();
+        } else if (home === "Add a department"){
+            addDepartment();
+        } else if (home === "Add a role"){
+            addRole();
+        } else if (home === "Add an employee"){
+            addEmployee();
+        } else if (home === "Update an employee"){
+            updateEmployee
+        }
+    });
 }
 
 // Next functions will be to view ALL departments, roles, and employees.
@@ -24,6 +60,9 @@ function viewRoles() {
 }
 
 function viewEmployees() {
+
+}
+function viewEmployeesByDept(){
 
 }
 
