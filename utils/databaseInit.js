@@ -51,7 +51,7 @@ inquirer
 
 // Next functions will be to view ALL departments, roles, and employees.
 function viewDepartments() {
-const sql = `SELECT d_id AS id, name FROM department`;
+const sql = `SELECT d_id AS id, dept_name FROM department`;
 db.query(sql, (err, rows) => {
     if(err){
         console.log(err.message);
@@ -62,17 +62,35 @@ db.query(sql, (err, rows) => {
 }
 
 function viewRoles() {
-
+    const sql = `SELECT r_id AS id, title, salary, dept_name AS department FROM role 
+    LEFT JOIN department ON role.department_id = department.d_id`;
+    db.query(sql, (err, rows) => {
+        if(err){
+            console.log(err.message);
+        }
+        console.table(rows);
+        mainMenu();
+    });
 }
 
 function viewEmployees() {
-
+    const sql = `SELECT e.e_id AS id, concat(e.first_name,' ', e.last_name) AS employee, e.title AS title, e.salary AS salary, e.dept_name AS department,
+    CASE WHEN e.manager_id = e.e_id THEN concat ('N/A') ELSE concat(m.first_name,' ', m.last_name) END AS manager
+    FROM (SELECT * FROM employee LEFT JOIN role ON employee.role_id = role.r_id LEFT JOIN department ON role.department_id = department.d_id) AS e, employee m
+    WHERE m.e_id = e.manager_id`;
+    db.query(sql, (err, rows) => {
+        if (err){
+            console.log(err.message);
+        }
+        console.table(rows);
+        mainMenu();
+    })
 }
 
 // I will attempt this at some point.
-function viewEmployeesByDept(){
+// function viewEmployeesByDept(){
 
-}
+// }
 
 // Next functions will be to add a department, role, or employee
 function addDepartment() {

@@ -5,11 +5,11 @@ USE company_db;
 
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS role;
-DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS employee;
 
 CREATE TABLE department (
     d_id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(30) NOT NULL,
+    dept_name VARCHAR(30) NOT NULL,
     PRIMARY KEY (d_id)
 );
 
@@ -29,7 +29,7 @@ CREATE TABLE employee (
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INT NOT NULL,
-    manager_id INT,
+    manager_id INT DEFAULT 1,
     PRIMARY KEY (e_id),
     FOREIGN KEY (role_id)
     REFERENCES role(r_id)
