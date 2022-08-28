@@ -98,6 +98,72 @@ function addDepartment() {
 }
 
 function addRole() {
+    const getDepartments = new Promise((resolve, reject) => {
+        let departmentsArr = [];
+        const sql = `SELECT dept_name FROM department`;
+        db.query(sql, (err, rows) => {
+            if (err){
+                console.log(err.message);
+            }
+            for (var i = 0; i < rows.length; i++){
+                departmentsArr.push(Object.values(rows[i])[0]);
+            }
+            resolve(departmentsArr);
+            console.log(departmentsArr);
+        });
+    });
+
+    getDepartments.then((departmentsArr) => {
+        inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "deptId",
+                message: "Choose the department for your role.",
+                choices: departmentsArr,
+                filter: (deptIdInput) => {
+                    if (deptIdInput) {
+                        return departmentsArr.indexOf(deptIdInput);
+                    }
+                },
+            },
+            {
+                type: "text",
+                name: "roleTitle",
+                message: "What is the title of your role?"
+                // some sort of validation?
+            },
+            {
+                type: "number",
+                name: "roleSalary",
+                message: "What is the salary of your role?"
+                // some sort of validation?
+            }
+         ])
+         .then (({ deptId, roleTitle, roleSalary }) =>{
+            const sql = "INSERT INTO role (department_id, title, salary) VALUES (?,?,?)";
+
+            const query = [deptId + 1, roleTitle, roleSalary];
+
+            db.query(sql, query, (err, rows) => {
+                if (err) {
+                    console.log(err.message);
+                }
+                inquirer.prompt ({
+                    type: "confirm",
+                    name: "result",
+                    message: "view results?"
+                })
+                .then(({ result }) =>{
+                    if(result) {
+                        viewRoles();
+                    } else {
+                        mainMenu();
+                    }
+                });
+            });
+         });
+    });
 
 }
 
