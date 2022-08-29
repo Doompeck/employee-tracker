@@ -245,7 +245,7 @@ function addEmployee() {
 
     const getManagerIdList = new Promise((resolve, reject) => {
         let managerIdArr = [];
-        const sql = `SELECT DISTINCY m.e_id AS manager
+        const sql = `SELECT DISTINCT m.e_id AS manager
                     FROM employee e, employee m
                     WHERE m.e_id = e.manager_id`;
         db.query(sql, (err, rows) => {
@@ -332,13 +332,13 @@ function addEmployee() {
                         return managerIdArr[managerIdOne];
                     }
                 }
-                const managerId = getManId();
+                const managerId = getManagerId();
                 const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
                 const query = [
                     firstname,
                     lastname,
                     roleId,
-                    manId
+                    managerId
                 ];
 
                 db.query(sql, query, (err, rows) => {
