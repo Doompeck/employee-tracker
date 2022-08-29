@@ -94,7 +94,35 @@ function viewEmployees() {
 
 // Next functions will be to add a department, role, or employee
 function addDepartment() {
-
+inquirer.prompt([
+    {
+        type: "text",
+        name: "newDept",
+        message: "Enter the department name:",
+    },
+])
+.then (({ newDept }) => {
+    const sql = "INSERT INTO department (dept_name) VALUES (?)";
+    const query = [newDept];
+    db.query(sql, query, (err, rows) => {
+        if (err) {
+            console.log(err.message);
+        }
+        inquirer
+            .prompt ({
+            type: "confirm",
+            name: "result",
+            message: "view results?"
+        })
+        .then(({ result }) =>{
+            if(result) {
+                viewDepartments();
+            } else {
+                mainMenu();
+            }
+        });
+    });
+});
 }
 
 function addRole() {
@@ -168,6 +196,174 @@ function addRole() {
 }
 
 function addEmployee() {
+    const getTitles = new Promise((resolve, reject) => {
+        let titlesArr = [];
+        const sql = "SELECT title FROM role";
+        db.query(sql, (err, rows) => {
+            if(err) {
+                console.log(err.message);
+            }
+            for (var i = 0; i < rows.length; i++) {
+                titlesArr.push(Object.values(rows[i])[0]);
+            }
+            resolve(titlesArr);
+        });
+    });
+
+    const getActiveManagerList = new Promise((resolve, reject) => {
+        let activeManagersArr = [];
+        const sql = `SELECT DISTINCT concat(m.first_name, ' ', m.last_name)
+                    AS manager FROM employee e, employee m
+                    WHERE m.e_id = e.manager_id `;
+        db.query(sql, (err,rows) => {
+            if(err) {
+                console.log(err.message);
+            }
+            for (var i = 0; i < rows.length; i++) {
+                activeManagersArr.push(Object.values(rows[i])[0]);
+            }
+            activeManagersArr.push("more");
+            resolve(activeManagersArr);
+        });
+    });
+
+    const getManager = new Promise((resolve, reject) => {
+        let managerArr = [];
+        const sql = `SELECT concat(m.first_name, ' ', m.last_name)
+                    AS manager FROM employee m`;
+        db.query(sql, (err, rows) => {
+            if(err) {
+                console.log(err.message);
+            }
+            for (var i = 0; i < rows.length; i++) {
+                managerArr.push(Object.values(rows[i])[0]);
+            }
+            managerArr.push("Employee does not have a manager");
+            resolve(managerArr);
+        });
+    });
+
+    const getManagerIdList = new Promise((resolve, reject) => {
+        let managerIdArr = [];
+        const sql = `SELECT DISTINCY m.e_id AS manager
+                    FROM employee e, employee m
+                    WHERE m.e_id = e.manager_id`;
+        db.query(sql, (err, rows) => {
+            if(err) {
+                console.log(err.message);
+            }
+            for (var i = 0; i < rows.length; i++) {
+                managerIdArr.push(Object.values(rows[i])[0]);
+            }
+            resolve(managerIdArr);
+        });
+    });
+
+    Promise.all([getTitles, getActiveManagerList, getManager, getManagerIdList])
+        .then(([titlesArr, activeManagersArr, managerArr, managerIdArr]) => {
+          inquirer.prompt([
+            {
+              type: "text",
+              name: "firstname",
+              message: "Enter Employee First Name:",
+              // add some form of validation
+            },
+            {
+              type: "text",
+              name: "lastname",
+              message: "Enter Employee Last Name:",
+              // add some form of validation
+            },
+            {
+              type: "list",
+              name: "roleId",
+              message: "Choose a role:",
+              choices: titlesArr,
+              filter: (roleIdInput) => {
+                if (roleIdInput) {
+                  return titlesArr.indexOf(roleIdInput) + 1;
+                }
+              },
+            },
+            {
+              type: "list",
+              name: "managerIdOne",
+              message: "Select a Manager:",
+              choices: activeManagersArr,
+              filter: manangerIdOneInput => {
+                if (manangerIdOneInput === "more") {
+                    return manangerIdOneInput;
+                } else {
+                    return activeManagersArr.indexOf(manangerIdOneInput);
+                }
+              }
+            },
+            {
+                type: "list",
+                name: "managerIdTwo",
+                message: "Select a Manager:",
+                choices: managerArr,
+                filter: manangerIdTwoInput => {
+                  if (manangerIdTwoInput === "No manager assigned") {
+                      return manangerIdTwoInput;
+                  } else {
+                      return managerArr.indexOf(manangerIdTwoInput) + 1;
+                  }
+                },
+                when: ({ managerIdOne }) => {
+                    if (isNaN(managerIdOne) === true) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+              }
+          ])
+          .then(
+            ({ firstname, lastname, roleId, managerIdOne, ManagerIdTwo }) => {
+                const getManagerId = () => {
+                    if (isNaN(managerIdOne)) {
+                        if(isNaN(ManagerIdTwo)) {
+                            managerArr.push(firstname +' '+ lastname);
+                        } else {
+                            return ManagerIdTwo;
+                        }
+                    } else {
+                        return managerIdArr[managerIdOne];
+                    }
+                }
+                const managerId = getManId();
+                const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
+                const query = [
+                    firstname,
+                    lastname,
+                    roleId,
+                    manId
+                ];
+
+                db.query(sql, query, (err, rows) => {
+                    if (err) {
+                        console.log(err.message);
+                    } else {
+                        inquirer
+                        .prompt (
+                            {
+                                type: "confirm",
+                                name: "results",
+                                message: "View results?"
+                            }
+                        ).then(({ results }) => {
+                            if (results) {
+                                viewEmployees();
+                            } else {
+                                mainMenu();
+                            }
+                        })
+                    }
+                });
+            }
+          );  
+        });
 
 }
 
@@ -225,4 +421,8 @@ module.exports = databaseInit;
             //     ("Engineer", 120000, 1);
             //     (?, ?, ?);
 
-                // THEN ask the user what they want to do next=
+                // THEN ask the user what they want to do next
+
+
+
+            
