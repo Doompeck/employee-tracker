@@ -42,7 +42,7 @@ inquirer
         } else if (choice === "Add an employee"){
             addEmployee();
         } else if (choice === "Update an employee"){
-            updateEmployee
+            updateEmployee();
         } else if (choice === 'Exit'){
             endProgram();
         }
@@ -367,17 +367,86 @@ function addEmployee() {
 
 }
 
-// Next functions will be to update a department, role, or employee
-function updateDepartment() {
-
-}
-
-function updateRole() {
-
-}
-
+// Next functions will be to update an employee
 function updateEmployee() {
+    const getTitle = new Promise((resolve, reject) => {
+        let titlesArr = [];
+        const sql = `SELECT title FROM role`;
+        db.query(sql, (err,rows) => {
+            if (err) {
+                console.log(err.message);
+            }
+            for (var i = 0; i < rows.length; i++) {
+                titlesArr.push(Object.values(rows[i])[0]);
+            }
+            resolve(titlesArr);
+        });
+    });
 
+    const getEmployees = new Promise((resolve, reject) => {
+        let employeesArr = [];
+        const sql = `SELECT first_name, last_name FROM employee`;
+        db.query(sql, (err,rows) => {
+            if (err) {
+                console.log(err.message);
+            }
+            for (var i = 0; i < rows.length; i++) {
+               employeesArr.push(Object.values(rows[i])[0] + ' ' + Object.values(rows[i])[1]);
+            }
+            resolve(employeesArr);
+        });
+    });
+
+    Promise.all([getTitle, getEmployees]).then(([titlesArr, employeesArr]) => {
+        inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "employeeName",
+                message: "Which employee do you need to update?",
+                choices: employeesArr,
+                filter: (employeeNameInput) => {
+                  if (employeeNameInput) {
+                    return employeesArr.indexOf(employeeNameInput);
+                  }
+                },
+            },
+            {
+                type: "list",
+                name: "employeeRole",
+                message: "Select a new role for this employee.",
+                choices: titlesArr,
+                filter: (employeeRoleInput) => {
+                  if (employeeRoleInput) {
+                    return titlesArr.indexOf(employeeRoleInput);
+                  }
+                },
+            },
+        ])
+        .then(({ employeeName, employeeRole }) => {
+            const sql = "UPDATE employee SET role_id = ? WHERE e_id = ?";
+            const query = [employeeRole + 1, employeeName + 1];
+            db.query(sql, query, (err, rows) => {
+                if (err) {
+                    console.log(err.message);
+                }
+                inquirer
+                .prompt(
+                    {
+                        type: 'confirm',
+                        name: 'results',
+                        message: 'View results?'
+                    }
+                ).then(({ results }) => {
+                    if (results) {
+                        viewEmployees();
+                    } else {
+                        mainMenu();
+                    }
+                });
+            });
+        });
+    });
 }
 
 // End the program
