@@ -52,9 +52,9 @@ n/a
 ​
 n/a
 ​
-## Preview Image
+## Walkthrough Video
 ​
-[Employee Tracker CMS.webm](https://user-images.githubusercontent.com/104403183/187119246-b57dcce2-e08b-4c4d-8a96-cd4c7a6cc6b1.webm)
+[Employee Tracker CMS video](https://user-images.githubusercontent.com/104403183/187119246-b57dcce2-e08b-4c4d-8a96-cd4c7a6cc6b1.webm)
 
 ​
 ## GitHub userName
