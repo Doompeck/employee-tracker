@@ -54,7 +54,8 @@ n/a
 ​
 ## Preview Image
 ​
-[![image](./assets/images/Java%20Quiz.gif)](./assets/images/Java%20Quiz.gif)
+[Employee Tracker CMS.webm](https://user-images.githubusercontent.com/104403183/187119246-b57dcce2-e08b-4c4d-8a96-cd4c7a6cc6b1.webm)
+
 ​
 ## GitHub userName
 ​
